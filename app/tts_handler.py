@@ -10,7 +10,7 @@ DEFAULT_LANGUAGE = os.getenv('DEFAULT_LANGUAGE', 'en-US')
 
 # OpenAI voice names mapped to edge-tts equivalents
 voice_mapping = {
-    'alloy': 'en-US-AvaNeural',
+    'alloy': 'de-DE-SeraphinaMultilingualNeural',
     'echo': 'en-US-AndrewNeural',
     'fable': 'en-GB-SoniaNeural',
     'onyx': 'en-US-EricNeural',
