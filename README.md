@@ -8,7 +8,6 @@
 [![Discord](https://img.shields.io/badge/Discord-Voice_AI_%26_TTS_Tools-blue?logo=discord&logoColor=white)](https://discord.gg/GkFbBCBqJ6)
 [![LinkedIn](https://img.shields.io/badge/Connect_on_LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/travisvannimwegen)
 
-
 This project provides a local, OpenAI-compatible text-to-speech (TTS) API using `edge-tts`. It emulates the OpenAI TTS endpoint (`/v1/audio/speech`), enabling users to generate speech from text with various voice options and playback speeds, just like the OpenAI API.
 
 `edge-tts` uses Microsoft Edge's online text-to-speech service, so it is completely free.
@@ -23,9 +22,21 @@ This project provides a local, OpenAI-compatible text-to-speech (TTS) API using 
 - **Supported Voices**: Maps OpenAI voices (alloy, echo, fable, onyx, nova, shimmer) to `edge-tts` equivalents.
 - **Flexible Formats**: Supports multiple audio formats (mp3, opus, aac, flac, wav, pcm).
 - **Adjustable Speed**: Option to modify playback speed (0.25x to 4.0x).
-- **Optional Direct Edge-TTS Voice Selection**: Use either OpenAI voice mappings or specify any edge-tts voice directly.
+- **Optional Direct Edge-TTS Voice Selection**: Use either OpenAI voice mappings or specify [any edge-tts voice](https://tts.travisvn.com) directly.
 
-## Getting Started
+## ⚡️ Quick start
+
+The simplest way to get started without having to configure anything is to run the command below
+
+```bash
+docker run -d -p 5050:5050 travisvn/openai-edge-tts:latest
+```
+
+This will run the service at port 5050 with all the default configs
+
+_(Docker required, obviously)_
+
+## Setup
 
 ### Prerequisites
 
@@ -36,12 +47,14 @@ This project provides a local, OpenAI-compatible text-to-speech (TTS) API using 
 ### Installation
 
 1. **Clone the Repository**:
+
 ```bash
 git clone https://github.com/travisvn/openai-edge-tts.git
 cd openai-edge-tts
 ```
 
 2. **Environment Variables**: Create a `.env` file in the root directory with the following variables:
+
 ```
 API_KEY=your_api_key_here
 PORT=5050
@@ -55,9 +68,11 @@ DEFAULT_LANGUAGE=en-US
 REQUIRE_API_KEY=True
 REMOVE_FILTER=False
 EXPAND_API=True
+DETAILED_ERROR_LOGGING=True
 ```
 
 Or, copy the default `.env.example` with the following:
+
 ```bash
 cp .env.example .env
 ```
@@ -67,7 +82,6 @@ cp .env.example .env
 ```bash
 docker compose up --build
 ```
-_(Note: docker-compose is not the same as docker compose)_
 
 Run with `-d` to run docker compose in "detached mode", meaning it will run in the background and free up your terminal.
 
@@ -75,7 +89,42 @@ Run with `-d` to run docker compose in "detached mode", meaning it will run in t
 docker compose up -d
 ```
 
+<details>
+<summary>
+
+#### Building Locally with FFmpeg using Docker Compose
+
+</summary>
+
+By default, `docker compose up --build` creates a minimal image _without_ `ffmpeg`. If you're building locally (after cloning this repository) and need `ffmpeg` for audio format conversions (beyond MP3), you can include it in the build.
+
+This is controlled by the `INSTALL_FFMPEG_ARG` build argument. Set this environment variable to `true` in one of these ways:
+
+1.  **Prefixing the command:**
+    ```bash
+    INSTALL_FFMPEG_ARG=true docker compose up --build
+    ```
+2.  **Adding to your `.env` file:**
+    Add this line to the `.env` file in the project root:
+    ```env
+    INSTALL_FFMPEG_ARG=true
+    ```
+    Then, run `docker compose up --build`.
+3.  **Exporting in your shell environment:**
+    Add `export INSTALL_FFMPEG_ARG=true` to your shell configuration (e.g., `~/.zshrc`, `~/.bashrc`) and reload your shell. Then `docker compose up --build` will use it.
+
+This is for local builds. For pre-built Docker Hub images, add the `latest-ffmpeg` tag to the version
+
+```bash
+docker run -d -p 5050:5050 -e API_KEY=your_api_key_here -e PORT=5050 travisvn/openai-edge-tts:latest-ffmpeg
+```
+
+---
+
+</details>
+
 Alternatively, **run directly with Docker**:
+
 ```bash
 docker build -t openai-edge-tts .
 docker run -p 5050:5050 --env-file .env openai-edge-tts
@@ -89,7 +138,12 @@ docker run -d -p 5050:5050 --env-file .env openai-edge-tts
 
 4. **Access the API**: Your server will be accessible at `http://localhost:5050`.
 
+<details>
+<summary>
+
 ## Running with Python
+
+</summary>
 
 If you prefer to run this project directly with Python, follow these steps to set up a virtual environment, install dependencies, and start the server.
 
@@ -139,6 +193,7 @@ DEFAULT_LANGUAGE=en-US
 REQUIRE_API_KEY=True
 REMOVE_FILTER=False
 EXPAND_API=True
+DETAILED_ERROR_LOGGING=True
 ```
 
 ### 5. Run the Server
@@ -154,9 +209,15 @@ The server will start running at `http://localhost:5050`.
 ### 6. Test the API
 
 You can now interact with the API at `http://localhost:5050/v1/audio/speech` and other available endpoints. See the [Usage](#usage) section for request examples.
-    
 
-### Usage
+</details>
+
+<details>
+<summary>
+
+## Usage
+
+</summary>
 
 #### Endpoint: `/v1/audio/speech`
 
@@ -216,11 +277,13 @@ curl -X POST http://localhost:5050/v1/audio/speech \
   --output speech.mp3
 ```
 
-### Additional Endpoints
+#### Additional Endpoints
 
 - **POST/GET /v1/models**: Lists available TTS models.
 - **POST/GET /v1/voices**: Lists `edge-tts` voices for a given language / locale.
 - **POST/GET /v1/voices/all**: Lists all `edge-tts` voices, with language support information.
+
+</details>
 
 ### Contributing
 
@@ -230,13 +293,13 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 This project is licensed under GNU General Public License v3.0 (GPL-3.0), and the acceptable use-case is intended to be personal use. For enterprise or non-personal use of `openai-edge-tts`, contact me at tts@travisvn.com
 
-___
+---
 
-## Example Use Case 
+## Example Use Case
 
 > [!TIP]
 > Swap `localhost` to your local IP (ex. `192.168.0.1`) if you have issues
-> 
+>
 > _It may be the case that, when accessing this endpoint on a different server / computer or when the call is made from another source (like Open WebUI), you need to change the URL from `localhost` to your local IP (something like `192.168.0.1` or similar)_
 
 # Open WebUI
@@ -262,18 +325,19 @@ Below, you can see a screenshot of the correct configuration for using this proj
 
 ![Screenshot of AnythingLLM settings for Voice adding the correct endpoints for this project](https://utfs.io/f/MMMHiQ1TQaBoGx6WUTRDJUWPLqoMsXiNkajAdVOwgcxH6uv7)
 
-___
-
+---
 
 ## Quick Info
 
 - `your_api_key_here` never needs to be replaced — No "real" API key is required. Use whichever string you'd like.
 - The quickest way to get this up and running is to install docker and run the command below:
+
 ```bash
 docker run -d -p 5050:5050 -e API_KEY=your_api_key_here -e PORT=5050 travisvn/openai-edge-tts:latest
 ```
 
-___
+---
 
 # Voice Samples 🎙️
+
 [Play voice samples and see all available Edge TTS voices](https://tts.travisvn.com/)
