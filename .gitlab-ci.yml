@@ -1,3 +1,7 @@
+stages:
+  - build
+  - test
+  - secret-detection
 build:
   image: docker:latest
   stage: build
@@ -24,3 +28,7 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
+
+secret_detection:
+  stage: secret-detection
