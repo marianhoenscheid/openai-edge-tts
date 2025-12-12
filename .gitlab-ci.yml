@@ -4,9 +4,9 @@ stages:
   - secret-detection
 build:
   stage: build
-  image: docker:24.0.6
+  image: docker:29
   services:
-    - name: docker:24.0.6-dind
+    - name: docker:29-dind
       alias: docker
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
