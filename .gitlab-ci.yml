@@ -4,10 +4,9 @@ stages:
   - secret-detection
 build:
   stage: build
-  image: $CI_REGISTRY/group/project/docker:24.0.5-cli
+  image: docker:24.0.5-cli
   services:
-    - name: $CI_REGISTRY/group/project/docker:24.0.5-dind
-      alias: docker
+    - docker:24.0.5-dind
   before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
