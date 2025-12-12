@@ -3,10 +3,13 @@ stages:
   - test
   - secret-detection
 build:
-  image: docker:latest
   stage: build
+  image: $CI_REGISTRY/group/project/docker:24.0.5-cli
+  services:
+    - name: $CI_REGISTRY/group/project/docker:24.0.5-dind
+      alias: docker
   before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
   - |
     if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
@@ -16,7 +19,7 @@ build:
       tag=":$CI_COMMIT_REF_SLUG"
       echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
     fi
-  - docker build -f Dockerfile --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+  - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE${tag}" .
   - docker push "$CI_REGISTRY_IMAGE${tag}"
   rules:
   - if: "$CI_COMMIT_BRANCH"
