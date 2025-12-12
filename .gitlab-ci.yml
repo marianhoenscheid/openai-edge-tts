@@ -4,10 +4,13 @@ stages:
   - secret-detection
 build:
   stage: build
-  image: docker:cli
+  image: docker:24.0.6
   services:
-    - name: docker:dind
+    - name: docker:24.0.6-dind
       alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: ""               # disable TLS
+    DOCKER_HOST: "tcp://docker:2375"     # talk plain TCP
   before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
